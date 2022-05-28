@@ -62,6 +62,7 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.4.0'
 
     implementation 'com.google.accompanist:accompanist-navigation-material:0.23.1'
+    implementation 'com.google.accompanist:accompanist-swiperefresh:0.23.1'
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"

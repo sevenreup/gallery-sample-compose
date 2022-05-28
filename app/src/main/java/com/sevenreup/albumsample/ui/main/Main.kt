@@ -1,5 +1,6 @@
 package com.sevenreup.albumsample.ui.main
 
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -11,6 +12,7 @@ import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.sevenreup.albumsample.ui.album.AlbumScreen
 import com.sevenreup.albumsample.ui.media.MediaScreen
 
+@ExperimentalMaterialApi
 @ExperimentalMaterialNavigationApi
 @Composable
 fun MainScreen() {
