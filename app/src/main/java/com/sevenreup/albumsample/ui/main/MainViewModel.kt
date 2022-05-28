@@ -13,6 +13,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(private val repository: SharedMediaRepository) : ViewModel() {
 
     val mediaList = MutableLiveData<List<MediaDTO>>(listOf())
+    val selected = MutableLiveData<MediaDTO>(null)
 
     init {
         viewModelScope.launch {

@@ -15,9 +15,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.sevenreup.albumsample.ui.theme.AlbumSampleTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+@ExperimentalMaterialNavigationApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
