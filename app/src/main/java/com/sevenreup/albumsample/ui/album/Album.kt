@@ -56,7 +56,7 @@ fun AlbumScreen(viewModel: MainViewModel, navController: NavController) {
             }
         },
         sheetContent = {
-            SettingsBottomSheet()
+            SettingsBottomSheet(viewModel)
         }) {
         AlbumGrid(mediaList, onRefresh = {
 

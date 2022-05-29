@@ -1,5 +1,9 @@
 package com.sevenreup.albumsample.utils
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.dataStore
+import com.sevenreup.albumsample.AppPreferences
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -21,3 +25,10 @@ fun String.getTimeFromDateString(): String {
     val formatter = DateTimeFormatter.ofPattern("HH:mm")
     return formatter.format(date)
 }
+
+private const val DATA_STORE_FILE_NAME = "app_prefs.pb"
+
+val Context.appPreferencesStore: DataStore<AppPreferences> by dataStore(
+    fileName = DATA_STORE_FILE_NAME,
+    serializer = AppPreferencesSerializer
+)
