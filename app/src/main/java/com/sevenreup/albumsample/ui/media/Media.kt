@@ -42,7 +42,12 @@ private fun MediaContainer(media: MediaDTO, onBackPressed: () -> Unit) {
 
         }
     }) {
-        ImageHolder(url = media.downloadUrl, modifier = Modifier.padding(it))
+        ImageHolder(
+            url = media.downloadUrl,
+            width = media.resx,
+            height = media.resy,
+            modifier = Modifier.padding(it)
+        )
     }
 
 }

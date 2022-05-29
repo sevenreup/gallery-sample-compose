@@ -161,16 +161,22 @@ fun PhotoContainer(photo: MediaDTO, onClick: (photo: MediaDTO) -> Unit) {
         Box() {
             ImageHolder(
                 url = photo.thumbnailUrl,
+                height = 160,
+                width = 160,
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(MaterialTheme.shapes.medium)
             )
             Box(
                 modifier = Modifier
-                    .background(Color.Cyan)
+                    .background(MaterialTheme.colors.secondary, shape = MaterialTheme.shapes.small)
                     .align(Alignment.BottomEnd)
             ) {
-                Text(text = photo.size.toMb())
+                Text(
+                    text = photo.size.toMb(),
+                    modifier = Modifier.padding(4.dp),
+                    style = MaterialTheme.typography.caption.copy(color = MaterialTheme.colors.onSecondary)
+                )
             }
         }
     }

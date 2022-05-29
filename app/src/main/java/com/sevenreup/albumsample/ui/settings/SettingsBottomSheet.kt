@@ -28,14 +28,20 @@ import com.sevenreup.albumsample.utils.*
 fun SettingsBottomSheet(viewModel: MainViewModel) {
     val prefs by viewModel.prefs.observeAsState()
     val savingEdits by viewModel.savingEdits.observeAsState(Response.Idle())
-
+    val context = LocalContext.current
     if (savingEdits is Response.Success) {
-        Toast.makeText(LocalContext.current, stringResource(id = R.string.saving_success), Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            LocalContext.current,
+            stringResource(id = R.string.saving_success),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     SettingsContent(
         preferences = prefs,
-        onCacheClear = {},
+        onCacheClear = {
+            viewModel.clearCache(context = context)
+        },
         saving = savingEdits is Response.Loading,
         onPrefsEdit = { shareId, options ->
             viewModel.editPreferences(shareID = shareId, options = options)
