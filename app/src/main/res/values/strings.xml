@@ -1,9 +1,12 @@
 <resources>
-    <string name="app_name">AlbumSample</string>
+    <string name="app_name">Gallery Sample</string>
     <string name="shareId">Share Id</string>
     <string name="edit_share_id">Edit Share Id</string>
     <string name="width">Width</string>
     <string name="height">Height</string>
     <string name="mode">Image Mode</string>
     <string name="saving_success">Saving success</string>
+    <string name="settings">Settings</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="refresh">Refresh</string>
 </resources>

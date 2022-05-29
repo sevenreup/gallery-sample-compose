@@ -1,5 +1,6 @@
 package com.sevenreup.albumsample.ui.album
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,6 +9,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -16,78 +20,131 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.sevenreup.albumsample.R
 import com.sevenreup.albumsample.data.model.MediaDTO
 import com.sevenreup.albumsample.ui.components.ImageHolder
 import com.sevenreup.albumsample.ui.main.MainViewModel
 import com.sevenreup.albumsample.ui.settings.SettingsBottomSheet
+import com.sevenreup.albumsample.utils.Response
 import com.sevenreup.albumsample.utils.toMb
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterialApi
 @Composable
 fun AlbumScreen(viewModel: MainViewModel, navController: NavController) {
-    val mediaList by viewModel.mediaList.observeAsState(listOf())
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
-    )
+    val mediaResponse by viewModel.mediaResponse.observeAsState(Response.Loading())
+    val bottomState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val coroutineScope = rememberCoroutineScope()
 
-    BottomSheetScaffold(
-        scaffoldState = bottomSheetScaffoldState,
-        sheetPeekHeight = 0.dp,
-        topBar = {
-            TopAppBar {
-                Text(text = "Sample Gallery", Modifier.weight(1F))
-                IconButton(onClick = {
-                    coroutineScope.launch {
-                        if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
-                            bottomSheetScaffoldState.bottomSheetState.expand()
-                        } else {
-                            bottomSheetScaffoldState.bottomSheetState.collapse()
-                        }
-                    }
-                }) {
-                    Icon(Icons.Default.Info, contentDescription = "Settings")
-                }
-            }
-        },
+    BackHandler(enabled = bottomState.isVisible) {
+        coroutineScope.launch {
+            bottomState.hide()
+        }
+    }
+
+    ModalBottomSheetLayout(
+        sheetState = bottomState,
         sheetContent = {
             SettingsBottomSheet(viewModel)
         }) {
-        AlbumGrid(mediaList, onRefresh = {
-
-        }) {
-            viewModel.selected.value = it
-            navController.navigate("media")
-        }
+        Scaffold(
+            topBar = {
+                TopAppBar {
+                    Text(text = stringResource(id = R.string.app_name), Modifier.weight(1F))
+                    IconButton(onClick = {
+                        coroutineScope.launch {
+                            if (bottomState.isVisible) {
+                                bottomState.hide()
+                            } else {
+                                bottomState.show()
+                            }
+                        }
+                    }) {
+                        Icon(
+                            Icons.Default.Settings,
+                            contentDescription = stringResource(id = R.string.settings)
+                        )
+                    }
+                }
+            },
+            content = {
+                Box(Modifier.padding(it)) {
+                    AlbumGrid(mediaResponse = mediaResponse, onItemClick = {
+                        viewModel.selected.value = it
+                        navController.navigate("media")
+                    }, refresh = {
+                        viewModel.refreshRefresh()
+                    })
+                }
+            },
+        )
     }
 }
 
 @Composable
 fun AlbumGrid(
-    photos: List<MediaDTO>,
-    onRefresh: () -> Unit,
-    onItemClick: (photo: MediaDTO) -> Unit
+    mediaResponse: Response<List<MediaDTO>?>,
+    onItemClick: (photo: MediaDTO) -> Unit,
+    refresh: () -> Unit
 ) {
-    val swipeRefreshState = rememberSwipeRefreshState(true)
+    val swipeRefreshState = rememberSwipeRefreshState(mediaResponse !is Response.Loading)
 
-    SwipeRefresh(state = swipeRefreshState, onRefresh = onRefresh) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(8.dp)
-        ) {
-            items(photos.size) { index ->
-                val photo = photos[index]
-                PhotoContainer(photo, onItemClick)
+    SwipeRefresh(state = swipeRefreshState, onRefresh = refresh) {
+        when (mediaResponse) {
+            is Response.Failure -> {
+                swipeRefreshState.isRefreshing = false
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(Icons.Default.Warning, contentDescription = "Error")
+                    Text(text = stringResource(id = R.string.something_went_wrong))
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(text = mediaResponse.message ?: "")
+                    Button(onClick = refresh) {
+                        Icon(
+                            Icons.Default.Refresh,
+                            contentDescription = stringResource(id = R.string.refresh)
+                        )
+                        Text(text = stringResource(id = R.string.refresh))
+                    }
+                }
+            }
+            is Response.Success -> {
+                swipeRefreshState.isRefreshing = false
+                val media = mediaResponse.data!!
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(3),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(8.dp)
+                ) {
+                    items(media.size) { index ->
+                        val photo = media[index]
+                        PhotoContainer(photo, onItemClick)
+                    }
+                }
+            }
+            else -> {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator()
+                    Text(text = "Loading")
+                }
+
             }
         }
     }
+
 
 }
 
@@ -103,7 +160,8 @@ fun PhotoContainer(photo: MediaDTO, onClick: (photo: MediaDTO) -> Unit) {
     ) {
         Box() {
             ImageHolder(
-                url = photo.thumbnailUrl, modifier = Modifier
+                url = photo.thumbnailUrl,
+                modifier = Modifier
                     .fillMaxSize()
                     .clip(MaterialTheme.shapes.medium)
             )

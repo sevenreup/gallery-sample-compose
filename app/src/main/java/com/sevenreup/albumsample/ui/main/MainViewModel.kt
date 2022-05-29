@@ -1,6 +1,5 @@
 package com.sevenreup.albumsample.ui.main
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +8,6 @@ import com.sevenreup.albumsample.RequestMessageOptions
 import com.sevenreup.albumsample.data.model.MediaDTO
 import com.sevenreup.albumsample.data.repository.AppPreferenceRepository
 import com.sevenreup.albumsample.data.repository.SharedMediaRepository
-import com.sevenreup.albumsample.utils.DefaultValues
 import com.sevenreup.albumsample.utils.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -21,7 +19,7 @@ class MainViewModel @Inject constructor(
     private val appPrefRepository: AppPreferenceRepository
 ) : ViewModel() {
     val prefs = MutableLiveData<AppPreferences>()
-    val mediaList = MutableLiveData<List<MediaDTO>>(listOf())
+    val mediaResponse = MutableLiveData<Response<List<MediaDTO>?>>(Response.Loading())
     val selected = MutableLiveData<MediaDTO>(null)
 
     val savingEdits = MutableLiveData<Response<Boolean>>(Response.Idle())
@@ -30,11 +28,20 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             appPrefRepository.appPreferenceFlow.collect {
                 prefs.value = it
+                getMedia(it)
             }
         }
-        viewModelScope.launch {
-            mediaList.value = repository.getMedia()
-        }
+    }
+
+    private suspend fun getMedia(appPreferences: AppPreferences) {
+        mediaResponse.value = Response.Loading()
+
+        mediaResponse.value = repository.getMedia(
+            appPreferences.shareId,
+            appPreferences.options.width,
+            appPreferences.options.height,
+            appPreferences.options.mode
+        )
     }
 
     fun editPreferences(shareID: String, options: RequestMessageOptions) {
@@ -43,6 +50,16 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             appPrefRepository.editPreferences(shareId = shareID, options = options)
             savingEdits.value = Response.Success(true)
+        }
+    }
+
+    fun refreshRefresh() {
+        viewModelScope.launch {
+            val prefs = prefs.value
+
+            if (prefs != null) {
+                getMedia(appPreferences = prefs)
+            }
         }
     }
 }
