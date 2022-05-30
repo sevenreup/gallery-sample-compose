@@ -4,6 +4,11 @@
 A demo Gallery application using Jetpack Compose and Hilt using the MVVM Architecture. This app fetches data from <a href="https://docs.kiliaro.io">Kiliaro api</a>.
 </p>
 
+# Screenshots
+<p align="center">
+<img src="./previews/screenshots/1.jpg" width="40%"/>
+<img src="./previews/screenshots/2.jpg" width="40%"/>
+</p>
 
 # Techstack
 - Minimum SDK level 21
