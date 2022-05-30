@@ -58,8 +58,10 @@ class MainViewModel @Inject constructor(
     }
 
     fun clearCache(context: Context) {
+        savingEdits.value = Response.Loading()
         viewModelScope.launch(Dispatchers.IO) {
             cacheRepository.clearCache(context)
+            savingEdits.postValue(Response.Success(true))
         }
     }
 

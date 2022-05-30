@@ -10,4 +10,7 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="refresh">Refresh</string>
     <string name="image_request_failed">Image request failed.</string>
+    <string name="general">General</string>
+    <string name="clear_cache">Clear Cache</string>
+    <string name="request_option">Request Option</string>
 </resources>

@@ -20,6 +20,7 @@ import com.sevenreup.albumsample.R
 import com.sevenreup.albumsample.RequestMessageOptions
 import com.sevenreup.albumsample.ui.components.GenericAppInput
 import com.sevenreup.albumsample.ui.components.MaterialSelect
+import com.sevenreup.albumsample.ui.components.SettingsLabel
 import com.sevenreup.albumsample.ui.main.MainViewModel
 import com.sevenreup.albumsample.utils.*
 
@@ -56,10 +57,13 @@ private fun SettingsContent(
     saving: Boolean,
     onPrefsEdit: (String, RequestMessageOptions) -> Unit
 ) {
-    Column(Modifier.padding(horizontal = 8.dp, vertical = 12.dp)) {
-        Text(text = "General")
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        SettingsLabel(title = stringResource(id = R.string.general))
         Button(onClick = { onCacheClear() }, Modifier.fillMaxWidth()) {
-            Text(text = "Clear Cache")
+            Text(text = stringResource(id = R.string.clear_cache))
         }
         if (preferences != null)
             RequestOptionEditForm(
@@ -84,18 +88,11 @@ fun RequestOptionEditForm(
 
     val options = listOf("bb", "crop", "md")
 
-    Column(Modifier.padding(vertical = 16.dp)) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Request Option")
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(Color.LightGray)
-                    .padding(horizontal = 8.dp)
-            )
-        }
-
+    Column(
+        modifier = Modifier.padding(vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        SettingsLabel(title = stringResource(id = R.string.request_option))
         GenericAppInput(
             state = shareIdState,
             title = stringResource(id = R.string.shareId),
