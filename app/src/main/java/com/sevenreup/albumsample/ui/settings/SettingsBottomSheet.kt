@@ -58,7 +58,7 @@ private fun SettingsContent(
 ) {
     Column(Modifier.padding(horizontal = 8.dp, vertical = 12.dp)) {
         Text(text = "General")
-        Button(onClick = { /*TODO*/ }, Modifier.fillMaxWidth()) {
+        Button(onClick = { onCacheClear() }, Modifier.fillMaxWidth()) {
             Text(text = "Clear Cache")
         }
         if (preferences != null)

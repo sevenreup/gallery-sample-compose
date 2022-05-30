@@ -4,25 +4,23 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bumptech.glide.Glide
 import com.sevenreup.albumsample.AppPreferences
-import com.sevenreup.albumsample.GlideApp
 import com.sevenreup.albumsample.RequestMessageOptions
 import com.sevenreup.albumsample.data.model.MediaDTO
 import com.sevenreup.albumsample.data.repository.AppPreferenceRepository
+import com.sevenreup.albumsample.data.repository.CacheRepository
 import com.sevenreup.albumsample.data.repository.SharedMediaRepository
 import com.sevenreup.albumsample.utils.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.Cache
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: SharedMediaRepository,
     private val appPrefRepository: AppPreferenceRepository,
-    private val cache: Cache
+    private val cacheRepository: CacheRepository
 ) : ViewModel() {
     val prefs = MutableLiveData<AppPreferences>()
     val mediaResponse = MutableLiveData<Response<List<MediaDTO>?>>(Response.Loading())
@@ -60,10 +58,8 @@ class MainViewModel @Inject constructor(
     }
 
     fun clearCache(context: Context) {
-        viewModelScope.launch {
-            GlideApp.get(context).clearDiskCache()
-            GlideApp.get(context).clearMemory()
-            cache.delete()
+        viewModelScope.launch(Dispatchers.IO) {
+            cacheRepository.clearCache(context)
         }
     }
 
