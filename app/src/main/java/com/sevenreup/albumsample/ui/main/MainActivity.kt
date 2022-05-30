@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.sevenreup.albumsample.ui.theme.AlbumSampleTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,6 +23,9 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContent {
             AlbumSampleTheme {
                 // A surface container using the 'background' color from the theme

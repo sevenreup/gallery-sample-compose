@@ -10,7 +10,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.sevenreup.albumsample.data.model.MediaDTO
+import com.sevenreup.albumsample.ui.components.GalleryAppBar
 import com.sevenreup.albumsample.ui.components.ImageHolder
+import com.sevenreup.albumsample.ui.components.PageContainer
 import com.sevenreup.albumsample.ui.main.MainViewModel
 import com.sevenreup.albumsample.utils.getTimeFromDateString
 import com.sevenreup.albumsample.utils.normaliseDateString
@@ -27,27 +29,29 @@ fun MediaScreen(viewModel: MainViewModel, navController: NavController) {
 
 @Composable
 private fun MediaContainer(media: MediaDTO, onBackPressed: () -> Unit) {
-    Scaffold(topBar = {
-        TopAppBar {
-            IconButton(onClick = onBackPressed) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-            }
-            Column() {
-                Text(
-                    text = media.createdAt.normaliseDateString(),
-                    style = MaterialTheme.typography.h6
-                )
-                Text(text = media.createdAt.getTimeFromDateString())
-            }
+    PageContainer()
+    {
+        Scaffold(topBar = {
+            GalleryAppBar {
+                IconButton(onClick = onBackPressed) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                }
+                Column() {
+                    Text(
+                        text = media.createdAt.normaliseDateString(),
+                        style = MaterialTheme.typography.h6
+                    )
+                    Text(text = media.createdAt.getTimeFromDateString())
+                }
 
+            }
+        }) {
+            ImageHolder(
+                url = media.downloadUrl,
+                width = media.resx,
+                height = media.resy,
+                modifier = Modifier.padding(it)
+            )
         }
-    }) {
-        ImageHolder(
-            url = media.downloadUrl,
-            width = media.resx,
-            height = media.resy,
-            modifier = Modifier.padding(it)
-        )
     }
-
 }

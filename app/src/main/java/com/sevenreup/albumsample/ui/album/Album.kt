@@ -27,7 +27,9 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.sevenreup.albumsample.R
 import com.sevenreup.albumsample.data.model.MediaDTO
+import com.sevenreup.albumsample.ui.components.GalleryAppBar
 import com.sevenreup.albumsample.ui.components.ImageHolder
+import com.sevenreup.albumsample.ui.components.PageContainer
 import com.sevenreup.albumsample.ui.main.MainViewModel
 import com.sevenreup.albumsample.ui.settings.SettingsBottomSheet
 import com.sevenreup.albumsample.utils.Response
@@ -47,43 +49,51 @@ fun AlbumScreen(viewModel: MainViewModel, navController: NavController) {
         }
     }
 
-    ModalBottomSheetLayout(
-        sheetState = bottomState,
-        sheetContent = {
-            SettingsBottomSheet(viewModel)
-        }) {
-        Scaffold(
-            topBar = {
-                TopAppBar {
-                    Text(text = stringResource(id = R.string.app_name), Modifier.weight(1F))
-                    IconButton(onClick = {
-                        coroutineScope.launch {
-                            if (bottomState.isVisible) {
-                                bottomState.hide()
-                            } else {
-                                bottomState.show()
-                            }
-                        }
-                    }) {
-                        Icon(
-                            Icons.Default.Settings,
-                            contentDescription = stringResource(id = R.string.settings)
+    PageContainer()
+    {
+        ModalBottomSheetLayout(
+            sheetState = bottomState,
+            sheetContent = {
+                SettingsBottomSheet(viewModel)
+            }) {
+            Scaffold(
+                topBar = {
+                    GalleryAppBar {
+                        Text(
+                            text = stringResource(id = R.string.app_name),
+                            style = MaterialTheme.typography.h6,
+                            modifier = Modifier.weight(1F)
                         )
+                        IconButton(onClick = {
+                            coroutineScope.launch {
+                                if (bottomState.isVisible) {
+                                    bottomState.hide()
+                                } else {
+                                    bottomState.show()
+                                }
+                            }
+                        }) {
+                            Icon(
+                                Icons.Default.Settings,
+                                contentDescription = stringResource(id = R.string.settings)
+                            )
+                        }
                     }
-                }
-            },
-            content = {
-                Box(Modifier.padding(it)) {
-                    AlbumGrid(mediaResponse = mediaResponse, onItemClick = {
-                        viewModel.selected.value = it
-                        navController.navigate("media")
-                    }, refresh = {
-                        viewModel.refreshRefresh()
-                    })
-                }
-            },
-        )
+                },
+                content = {
+                    Box(Modifier.padding(it)) {
+                        AlbumGrid(mediaResponse = mediaResponse, onItemClick = {
+                            viewModel.selected.value = it
+                            navController.navigate("media")
+                        }, refresh = {
+                            viewModel.refreshRefresh()
+                        })
+                    }
+                },
+            )
+        }
     }
+
 }
 
 @Composable
@@ -169,6 +179,7 @@ fun PhotoContainer(photo: MediaDTO, onClick: (photo: MediaDTO) -> Unit) {
             )
             Box(
                 modifier = Modifier
+                    .padding(bottom = 2.dp, end = 2.dp)
                     .background(MaterialTheme.colors.secondary, shape = MaterialTheme.shapes.small)
                     .align(Alignment.BottomEnd)
             ) {
